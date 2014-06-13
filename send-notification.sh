@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # 
 # Script d'envoi de notification SMS via l'API Free Mobile
@@ -6,37 +6,28 @@
 # 
 # Auteur: DUVERGIER Claude (http://claude.duvergier.fr)
 # 
-# Nécessite: sed, sh et wget
+# Nécessite: curl, todos
 # 
 # Possible usages:
 #   send-notification.sh "All your base are belong to us"
 #   echo "All your base are belong to us" | send-notification.sh
 #   uptime | send-notification.sh
 
-
-##
-## Configuration système
-##
-
-# URL d'accès à l'API
-SMSAPI_BASEURL="https://smsapi.free-mobile.fr"
-
-# Action d'envoi de notification
-SMSAPI_SEND_ACTION=sendmsg
-
-
 ##
 ## Configuration utilisateur
 ##
+if ! . ~/.freemobile-send-notification 
+then 
+	# Valeur par defaut
 
-# Login utilisateur / identifiant Free Mobile (celui utilisé pour
-# accéder à l'Espace Abonné)
-USER_LOGIN="1234567890"
-
-# Clé d'identification (générée et fournie par Free Mobile via
-# l'Espace Abonné, "Mes Options" :
-# https://mobile.free.fr/moncompte/index.php?page=options)
-API_KEY="s0me5eCre74p1K3y"
+	# Login utilisateur / identifiant Free Mobile (celui utilisé pour
+	# accéder à l'Espace Abonné)
+	USER_LOGIN="1234567890"
+	# Clé d'identification (générée et fournie par Free Mobile via
+	# l'Espace Abonné, "Mes Options" :
+	# https://mobile.free.fr/moncompte/index.php?page=options )
+	API_KEY="s0me5eCre74p1K3y"
+fi
 
 # Texte qui sera ajouté AVANT chaque message envoyé
 MESSAGE_HEADER="Notification :
@@ -47,20 +38,29 @@ MESSAGE_FOOTER="
 --
 Le serveur de la maison"
 
+##
+## Configuration système
+##
+
+# URL d'accès à l'API
+SMSAPI_BASEURL=https://smsapi.free-mobile.fr
+# Action d'envoi de notification
+SMSAPI_SEND_ACTION=sendmsg
 
 ##
 ## Traitement du message
 ##
 
 if [ "$*" ]; then
-	# Message en tant qu'argument de la ligne de commande
+	# Message en tant qu'arguments de la ligne de commande
     MESSAGE_TO_SEND="$*"
 else
-	# Message lu de STDIN
+	# Message lu depuis STDIN
 	MESSAGE_TO_SEND="$(cat)"
 fi
 # Assemble header, message et footer
 FINAL_MESSAGE_TO_SEND="$MESSAGE_HEADER$MESSAGE_TO_SEND$MESSAGE_FOOTER"
+FINAL_MESSAGE_TO_SEND="${FINAL_MESSAGE_TO_SEND//$'\n'/$'\r'}"
 
 ##
 ## Appel à l'API (envoi)
@@ -87,7 +87,7 @@ HTTP_STATUS_CODE=$(curl --insecure \
 #       ou login / clé incorrect(e).
 # 500 : Erreur côté serveur. Veuillez réessayez ultérieurement.
 
-if [ "$HTTP_STATUS_CODE" -eq 200 ]; then
+if [ "$HTTP_STATUS_CODE" = 200 ]; then
     # echo "API responded with 200: exiting with 0" #DEBUG
     exit 0
 else
