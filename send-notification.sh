@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # 
 # Script d'envoi de notification SMS via l'API Free Mobile
@@ -6,7 +6,7 @@
 # 
 # Auteur: DUVERGIER Claude (http://claude.duvergier.fr)
 # 
-# Nécessite: curl, todos
+# Nécessite: curl
 # 
 # Possible usages:
 #   send-notification.sh "All your base are belong to us"
@@ -29,14 +29,13 @@ then
 	API_KEY="s0me5eCre74p1K3y"
 fi
 
+# Valeur par defaut, si non definie dans la conf.
+
 # Texte qui sera ajouté AVANT chaque message envoyé
-MESSAGE_HEADER="Notification :
-"
+MESSAGE_HEADER="${MESSAGE_HEADER-From $(hostname): }"
 
 # Texte qui sera ajouté APRÈS chaque message envoyé
-MESSAGE_FOOTER="
---
-Le serveur de la maison"
+MESSAGE_FOOTER="${MESSAGE_FOOTER-}"
 
 ##
 ## Configuration système
@@ -51,7 +50,7 @@ SMSAPI_SEND_ACTION=sendmsg
 ## Traitement du message
 ##
 
-if [ "$*" ]; then
+if [ -n "$*" ]; then
 	# Message en tant qu'arguments de la ligne de commande
     MESSAGE_TO_SEND="$*"
 else
@@ -60,7 +59,8 @@ else
 fi
 # Assemble header, message et footer
 FINAL_MESSAGE_TO_SEND="$MESSAGE_HEADER$MESSAGE_TO_SEND$MESSAGE_FOOTER"
-FINAL_MESSAGE_TO_SEND="${FINAL_MESSAGE_TO_SEND//$'\n'/$'\r'}"
+FINAL_MESSAGE_TO_SEND="${FINAL_MESSAGE_TO_SEND//"
+"/ }"
 
 ##
 ## Appel à l'API (envoi)
