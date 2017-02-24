@@ -9,14 +9,10 @@ This service can only send SMS to line's owner: it cannot be used to send SMS to
 Shell Client
 ------------
 
-### Possible usages:
+### usage:
 
 ```
-send-notification.sh "All your base are belong to us"
-```
-
-```
-    uptime | send-notification.sh
+    uptime | send-notification.sh 0623456789
 ```
 
 ### Configuration :
@@ -25,10 +21,10 @@ Edit `send-notification.sh` and set the following variables:
 
 * `USER_LOGIN`
 * `API_KEY`
-* `MESSAGE_HEADER` (Optional)
-* `MESSAGE_FOOTER` (Optional)
 
-PHP Client
-----------
+Edit a file (`/etc/free_sms_apikeys`) to list the different contacts
 
-*Soon*
+```
+     0623456789 01928374 9zzlUR87j6HyzqK
+     0609876543 01928374 9zd8DJZl71dyzqK
+```
